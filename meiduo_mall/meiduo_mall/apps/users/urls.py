@@ -10,4 +10,6 @@ urlpatterns = [
     re_path(r'mobiles/(?P<mobile>1[345789]\d{9})/count/', views.MobileCountView.as_view()),
     path('authorizations/', obtain_jwt_token, name='authorizations'), # 登录,获取JWT token
     re_path(r'^accounts/(?P<account>\w{4,20})/sms/token/$', views.SMSCodeTokenView.as_view()),  # 获取发送短信验证码的token
+    re_path(r'^accounts/(?P<account>\w{4,20})/password/token/$', views.PasswordTokenView.as_view()),  # 获取修改密码的token
+
 ]

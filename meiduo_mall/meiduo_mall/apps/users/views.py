@@ -57,7 +57,6 @@ class UserView(CreateAPIView):
     serializer_class = serializers.CreateUserSerializer
 
 
-
 class SMSCodeTokenView(GenericAPIView):
     """获取发送短信验证码的凭据"""
 
@@ -82,3 +81,25 @@ class SMSCodeTokenView(GenericAPIView):
             'mobile':mobile,
             'access_token':access_token
         })
+
+
+class PasswordTokenView(GenericAPIView):
+    """
+    用户帐号设置密码的token
+    """
+    serializer_class = serializers.CheckSMSCodeSerializer
+
+    def get(self, request, account):
+        """
+        根据用户帐号获取修改密码的token
+        """
+        # 校验短信验证码
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.user
+
+        # 生成修改用户密码的access token
+        access_token = user.generate_set_password_token()
+
+        return Response({'user_id': user.id, 'access_token': access_token})
