@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-from itsdangerous import TimedJSONWebSignatureSerializer as TWJSSerializer
+from itsdangerous import TimedJSONWebSignatureSerializer as TWJSSerializer,BadData
 from django.conf import settings
 from . import constants
 # Create your models here.
@@ -29,3 +29,19 @@ class User(AbstractUser):
         }
         token = serialier.dumps(data)
         return token.decode()
+
+    @staticmethod
+    def check_send_sms_code_token(token):
+        """
+        检验access token
+        :param token: access token
+        :return: Mobile None
+        """
+        serialier = TWJSSerializer(settings.SECRET_KEY, constants.SEND_SMS_CODE_TOKEN_EXIPIRES)
+        try:
+            data = serialier.loads(token)
+        except BadData:
+            return None
+        else:
+            mobile = data.get('mobile')
+            return mobile
