@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.generics import CreateAPIView,GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status,mixins
 
 from . import serializers
 from .models import User
@@ -103,3 +103,14 @@ class PasswordTokenView(GenericAPIView):
         access_token = user.generate_set_password_token()
 
         return Response({'user_id': user.id, 'access_token': access_token})
+
+
+class PasswordView(mixins.UpdateModelMixin, GenericAPIView):
+    """
+    用户密码
+    """
+    queryset = User.objects.all()
+    serializer_class = serializers.ResetPasswordSerializer
+
+    def post(self, request, pk):
+        return self.update(request, pk)
