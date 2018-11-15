@@ -12,6 +12,7 @@ class User(AbstractUser):
 
     """用户模型类"""
     mobile = models.CharField(max_length=11,unique=True,verbose_name='手机号')
+    email_active = models.BooleanField(default=False, verbose_name='邮箱验证状态')
 
     class Meta:
         db_table = 'tb_users'
@@ -71,3 +72,10 @@ class User(AbstractUser):
             else:
                 return True
 
+    def generate_email_verify_url(self):
+        """生成邮箱验证链接"""
+        serializer = TJWSSerializer(settings.SECRET_KEY, expires_in=constants.EMAIL_VERIFY_TOKEN_EXPIRES)
+        data = {'user_id': self.id, 'email': self.email}
+        token = serializer.dumps(data)
+        verify_url = 'http://www.meiduo.site:8080/success_verify_email.html?token=' + token.decode()
+        return verify_url

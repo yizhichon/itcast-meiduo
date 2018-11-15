@@ -12,5 +12,7 @@ urlpatterns = [
     re_path(r'^accounts/(?P<account>\w{4,20})/sms/token/$', views.SMSCodeTokenView.as_view()),  # 获取发送短信验证码的token
     re_path(r'^accounts/(?P<account>\w{4,20})/password/token/$', views.PasswordTokenView.as_view()),  # 获取修改密码的token
     re_path(r'^users/(?P<pk>\d+)/password/$', views.PasswordView.as_view()),  # 重置密码的
+    path('user/', views.UserDetailView.as_view()),  # 用户个人中心数据
+    path('emails/', views.EmailView.as_view()),  # 用户个人中心数据
 
 ]

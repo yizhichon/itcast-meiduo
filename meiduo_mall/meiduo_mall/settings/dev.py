@@ -17,7 +17,7 @@ import datetime
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # sys.path保存了python解释器的导包路径
-sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'meiduo_mall/../apps'))
 
 
 
@@ -189,7 +189,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/meiduo.log"),
+            'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/../logs/meiduo.log"),
             'maxBytes': 300 * 1024 * 1024,
             'backupCount': 10,
             'formatter': 'verbose'
@@ -245,3 +245,12 @@ QQ_APP_ID = '101474184'
 QQ_APP_KEY = 'c6ce949e04e12ecc909ae6a8b09b637c'
 QQ_REDIRECT_URL = 'http://www.meiduo.site:8080/oauth_callback.html'
 QQ_STATE = '/'
+
+
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'meiduo_admin@163.com'
+EMAIL_HOST_PASSWORD = 'meiduo123'
+EMAIL_FROM = '美多商城<meiduo_admin@163.com>'
