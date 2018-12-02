@@ -17,7 +17,7 @@ import datetime
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # sys.path保存了python解释器的导包路径
-sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'meiduo_mall/../apps'))
 
 
 
@@ -43,10 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'ckeditor',  # 富文本编辑器
+    'ckeditor_uploader',  # 富文本编辑器上传图片模块
+    'django_crontab',  # 定时任务
     'users.apps.UsersConfig',
     'verifications.apps.VerificationsConfig',
     'oauth.apps.OauthConfig',
-
+    'areas.apps.AreasConfig',
+    'goods.apps.GoodsConfig',
+    'contents.apps.ContentsConfig'
 ]
 
 
@@ -66,7 +71,7 @@ ROOT_URLCONF = 'meiduo_mall.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -189,7 +194,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/meiduo.log"),
+            'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/../logs/meiduo.log"),
             'maxBytes': 300 * 1024 * 1024,
             'backupCount': 10,
             'formatter': 'verbose'
@@ -245,3 +250,52 @@ QQ_APP_ID = '101474184'
 QQ_APP_KEY = 'c6ce949e04e12ecc909ae6a8b09b637c'
 QQ_REDIRECT_URL = 'http://www.meiduo.site:8080/oauth_callback.html'
 QQ_STATE = '/'
+
+
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'meiduo_admin@163.com'
+EMAIL_HOST_PASSWORD = 'meiduo123'
+EMAIL_FROM = '美多商城<meiduo_admin@163.com>'
+
+
+# DRF扩展
+REST_FRAMEWORK_EXTENSIONS = {
+    # 缓存时间
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,
+    # 缓存存储
+    'DEFAULT_USE_CACHE': 'default',
+}
+
+
+# FastDFS
+FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
+FDFS_BASE_URL = 'http://192.168.110.129:8888/'
+
+# django文件存储
+DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.storage.FastDFSStorage'
+
+# 富文本编辑器ckeditor配置
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',  # 工具条功能
+        'height': 300,  # 编辑器高度
+        # 'width': 300,  # 编辑器宽
+    },
+}
+CKEDITOR_UPLOAD_PATH = ''  # 上传图片保存路径，使用了FastDFS，所以此处设为''
+
+
+# 生成的静态html文件保存目录
+GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end_pc')
+
+# 定时任务
+CRONJOBS = [
+    # 每5分钟执行一次生成主页静态文件
+    ('*/5 * * * *', 'contents.crons.generate_static_index_html', '>> E:/pycharm/kewai_itcast/Django/itcast-meiduo/meiduo_mall/logs/crontab.log/crontab.log')
+]
+
+# 解决crontab中文问题
+CRONTAB_COMMAND_PREFIX = 'LANG=zh_cn.UTF-8'

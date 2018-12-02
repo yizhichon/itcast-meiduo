@@ -46,7 +46,6 @@ class OAuthQQUserView(GenericAPIView):
         oauth_qq = OAuthQQ()
         try:
             access_token = oauth_qq.get_access_token(code)
-
             # 凭借 access_token向QQ服务器发送请求，获取openid
             openid = oauth_qq.get_openid(access_token)
         except QQAPIException:
