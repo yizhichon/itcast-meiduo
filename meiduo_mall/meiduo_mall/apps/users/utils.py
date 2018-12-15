@@ -32,7 +32,6 @@ def get_user_by_account(account):
     else:
         return user
 
-
 class UsernameMobileAuthBackend(ModelBackend):
     """
     自定义的认证方法后端
