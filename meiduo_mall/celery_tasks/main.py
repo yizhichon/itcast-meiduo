@@ -13,7 +13,7 @@ celery_app = Celery('meiduo',broker=broker_url,backend=result_backend)
 # 对celery应用添加配置信息
 # celery_app.config_from_object("celery_tasks.config") # win不支持
 
-celery_app.autodiscover_tasks(["celery_tasks.sms","celery_tasks.emails"]) # 以目录形式定义,py文件为tasks会自动搜寻
+celery_app.autodiscover_tasks(["celery_tasks.sms","celery_tasks.emails","celery_tasks.htmls"]) # 以目录形式定义,py文件为tasks会自动搜寻
 
 
 # 开启celery的命令

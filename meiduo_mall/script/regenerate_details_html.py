@@ -1,13 +1,31 @@
-from celery_tasks.main import celery_app
+#!C:/Users/li/Envs/kewai_py3_django/Scripts python
+
+_author__ = "一只虫"
+
+
+"""
+功能：手动生成所有SKU的静态detail html文件
+使用方法:
+    ./regenerate_detail_html.py
+"""
+import sys
+sys.path.insert(0, '../')
+sys.path.insert(0, '../meiduo_mall/apps')
+
+import os
+if not os.getenv('DJANGO_SETTINGS_MODULE'):
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'meiduo_mall.settings.dev'
+
+import django
+django.setup()
+
 from django.template import loader
 from django.conf import settings
-import os
 
 from goods.utils import get_categories
 from goods.models import SKU
 
 
-@celery_app.task(name='generate_static_sku_detail_html')
 def generate_static_sku_detail_html(sku_id):
     """
     生成静态商品详情页面
@@ -25,7 +43,6 @@ def generate_static_sku_detail_html(sku_id):
     goods.channel = goods.category1.goodschannel_set.all()[0]
 
     # 构建当前商品的规格键
-    # sku_key = [规格1参数id， 规格2参数id， 规格3参数id, ...]
     sku_specs = sku.skuspecification_set.order_by('spec_id')
     sku_key = []
     for spec in sku_specs:
@@ -52,23 +69,6 @@ def generate_static_sku_detail_html(sku_id):
         spec_sku_map[tuple(key)] = s.id
 
     # 获取当前商品的规格信息
-    #specs = [
-    #    {
-    #        'name': '屏幕尺寸',
-    #        'options': [
-    #            {'value': '13.3寸', 'sku_id': xxx},
-    #            {'value': '15.4寸', 'sku_id': xxx},
-    #        ]
-    #    },
-    #    {
-    #        'name': '颜色',
-    #        'options': [
-    #            {'value': '银色', 'sku_id': xxx},
-    #            {'value': '黑色', 'sku_id': xxx}
-    #        ]
-    #    },
-    #    ...
-    #]
     specs = goods.goodsspecification_set.order_by('id')
     # 若当前sku的规格信息不完整，则不再继续
     if len(sku_key) < len(specs):
@@ -93,6 +93,29 @@ def generate_static_sku_detail_html(sku_id):
         'sku': sku
     }
 
+    d = {}
+    for spec in specs:
+        print(spec.name)
+        for option in spec.options:
+            print(option.sku_id)
+            if option.sku_id == sku.id:
+                print(f"/goods/{option.sku_id}.html")
+                print(option.value, 1)
+            elif option.sku_id:
+                print(f"/goods/{option.sku_id}.html")
+                print(option.sku_id, 2)
+            else:
+                print(option.value, 3)
+    for spec in specs:
+        d[spec.name] = spec.options
+    x = {}
+    for k, vs in d.items():
+        xx = []
+        for v in vs:
+            xx.append({'id': v.sku_id, 'value': v.value})
+        x[k] = xx
+        print(x[k])
+
     template = loader.get_template('detail.html')
     html_text = template.render(context)
     file_path = os.path.join(settings.GENERATED_STATIC_HTML_FILES_DIR, 'goods/'+str(sku_id)+'.html')
@@ -100,21 +123,8 @@ def generate_static_sku_detail_html(sku_id):
         f.write(html_text)
 
 
-@celery_app.task(name='generate_static_list_search_html')
-def generate_static_list_search_html():
-    """
-    生成静态的商品列表页html文件
-    """
-    # 商品分类菜单
-    categories = get_categories()
-
-    # 渲染模板，生成静态html文件
-    context = {
-        'categories': categories,
-    }
-
-    template = loader.get_template('list.html')
-    html_text = template.render(context)
-    file_path = os.path.join(settings.GENERATED_STATIC_HTML_FILES_DIR, 'list.html')
-    with open(file_path, 'w',encoding='utf-8') as f:
-        f.write(html_text)
+if __name__ == '__main__':
+    skus = SKU.objects.all()
+    for sku in skus:
+        print(sku.id)
+        generate_static_sku_detail_html(sku.id)

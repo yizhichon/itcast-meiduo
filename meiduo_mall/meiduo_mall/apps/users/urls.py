@@ -15,6 +15,7 @@ urlpatterns = [
     path('user/', views.UserDetailView.as_view()),  # 用户个人中心数据
     path('emails/', views.EmailView.as_view()),  # 发送邮件
     path('emails/verification/', views.EmailVerifyView.as_view()),  # 更新邮箱
+    path('browse_histories/', views.UserHistoryView.as_view())
 
 ]
 
