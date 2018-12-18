@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.viewsets import GenericViewSet
 from django_redis import get_redis_connection
-
+from rest_framework_jwt.views import ObtainJSONWebToken
 
 from . import serializers
 from .models import User
@@ -16,6 +16,7 @@ from .utils import get_user_by_account
 from . import constants
 from goods.models import SKU
 from goods.serializers import SKUSerializer
+from carts.utils import merge_cart_cookie_to_redis
 import re
 
 
@@ -39,7 +40,6 @@ class UsernameCountView(APIView):
 
         return Response(data)
 
-
 class MobileCountView(APIView):
     """
     手机号数量
@@ -57,13 +57,11 @@ class MobileCountView(APIView):
 
         return Response(data)
 
-
 class UserView(CreateAPIView):
     """
     用户注册
     """
     serializer_class = serializers.CreateUserSerializer
-
 
 class SMSCodeTokenView(GenericAPIView):
     """获取发送短信验证码的凭据"""
@@ -90,7 +88,6 @@ class SMSCodeTokenView(GenericAPIView):
             'access_token':access_token
         })
 
-
 class PasswordTokenView(GenericAPIView):
     """
     用户帐号设置密码的token
@@ -112,7 +109,6 @@ class PasswordTokenView(GenericAPIView):
 
         return Response({'user_id': user.id, 'access_token': access_token})
 
-
 class PasswordView(mixins.UpdateModelMixin, GenericAPIView):
     """
     用户密码
@@ -122,7 +118,6 @@ class PasswordView(mixins.UpdateModelMixin, GenericAPIView):
 
     def post(self, request, pk):
         return self.update(request, pk)
-
 
 class UserDetailView(RetrieveAPIView):
     """用户详情信息
@@ -150,7 +145,6 @@ class UserDetailView(RetrieveAPIView):
         """
         return self.request.user
 
-
 class EmailView(UpdateAPIView):
     """
     保存邮箱
@@ -165,7 +159,6 @@ class EmailView(UpdateAPIView):
 
     # def get_serializer(self, *args, **kwargs):
     #     return EmailSerialier(self.request.user, data=self.request.data)
-
 
 class EmailVerifyView(APIView):
     """邮箱验证"""
@@ -182,7 +175,6 @@ class EmailVerifyView(APIView):
             return Response({"message": "OK"})
         else:
             return Response({"非法的token"}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class AddressViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericViewSet):
     """
@@ -253,7 +245,6 @@ class AddressViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericVi
         serializer.save()
         return Response(serializer.data)
 
-
 class UserHistoryView(mixins.CreateModelMixin, GenericAPIView):
     """用户历史记录"""
     permission_classes = [IsAuthenticated]
@@ -280,6 +271,18 @@ class UserHistoryView(mixins.CreateModelMixin, GenericAPIView):
         serializer = SKUSerializer(sku_list, many=True)
         return Response(serializer.data)
 
+class UserAuthorizationView(ObtainJSONWebToken):
 
+    def post(self, request, *args, **kwargs):
+        # 调用jwt扩展的方法，对用户登录的数据进行验证
+        response = super().post(request, *args, **kwargs)
+        # 如果用户登录成功，进行购物车数据合并
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # 表示用户登录成功
+            user = serializer.validated_data.get("user")
+            # 合并购物车
+            response = merge_cart_cookie_to_redis(request, response, user)
 
+        return response
 
