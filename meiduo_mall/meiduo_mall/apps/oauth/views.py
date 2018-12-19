@@ -6,6 +6,7 @@ from rest_framework.generics import GenericAPIView
 
 
 # Create your views here.
+from carts.utils import merge_cart_cookie_to_redis
 from .utils import OAuthQQ
 from .exceptions import QQAPIException
 from .models import OAuthQQUser
@@ -72,6 +73,9 @@ class OAuthQQUserView(GenericAPIView):
                 'username': user.username,
                 'user_id': user.id
             })
+            # 合并购物车
+            # response = merge_cart_cookie_to_redis(request, user, respons)
+            # return response
 
     def post(self, request):
         # 调用序列化器检查数据， 保存
@@ -93,5 +97,7 @@ class OAuthQQUserView(GenericAPIView):
             'username': user.username,
             'user_id': user.id
         })
-
+        # # 合并购物车
+        # response = merge_cart_cookie_to_redis(request, user, respons)
+        # return response
 
