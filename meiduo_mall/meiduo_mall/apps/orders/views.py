@@ -10,7 +10,7 @@ from goods.models import SKU
 
 
 # Create your views here.
-from .serializers import OrderSettlementSerializer#, SaveOrderSerializer
+from .serializers import OrderSettlementSerializer, SaveOrderSerializer
 
 
 class OrderSettlementView(APIView):
@@ -47,7 +47,7 @@ class OrderSettlementView(APIView):
         return Response(serializer.data)
 
 
-# class SaveOrderView(CreateAPIView):
-#     """保存订单"""
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = SaveOrderSerializer
+class SaveOrderView(CreateAPIView):
+    """保存订单"""
+    permission_classes = [IsAuthenticated]
+    serializer_class = SaveOrderSerializer

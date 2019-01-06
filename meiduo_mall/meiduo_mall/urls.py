@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+import xadmin
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
+    path('xadmin/', xadmin.site.urls),
     path('',include('verifications.urls')),
     path('', include('users.urls')),
     path('oauth/', include('oauth.urls')),
@@ -26,5 +28,6 @@ urlpatterns = [
     path('', include('goods.urls')),
     path('', include('carts.urls')),
     path('', include('orders.urls')),
+    path('', include('payment.urls')),
 
 ]
