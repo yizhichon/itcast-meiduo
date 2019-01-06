@@ -55,7 +55,10 @@ INSTALLED_APPS = [
     'contents.apps.ContentsConfig',
     'carts.apps.CartsConfig',
     'orders.apps.OrdersConfig',
-    'payment.apps.PaymentConfig'
+    'payment.apps.PaymentConfig',
+    'xadmin',
+    'crispy_forms',
+    'reversion',
 ]
 
 
@@ -332,3 +335,11 @@ HAYSTACK_CONNECTIONS = {
 
 # 当添加、修改、删除数据时，自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+# 支付宝
+ALIPAY_APPID = 2016091600525602
+ALIPAY_DEBUG = True
+ALIPAY_GATEWAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+
+# 收集静态文件的目录
+STATIC_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end_pc/static')
