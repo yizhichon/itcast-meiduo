@@ -105,8 +105,19 @@ DATABASES = {
         'USER': 'meiduo',  # 数据库用户名
         'PASSWORD': 'meiduo',  # 数据库用户密码
         'NAME': 'itcast_meiduo'  # 数据库名字
-    }
+    },
+    # 'slave': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'HOST': '192.168.110.129',  # 数据库主机
+    #     'PORT': 3306,  # 数据库端口
+    #     'USER': 'root',  # 数据库用户名
+    #     'PASSWORD': 'mysqllkh_520',  # 数据库用户密码
+    #     'NAME': 'itcast_meiduo'  # 数据库名字
+    # },
 }
+# 数据库路由,读写分离
+# DATABASE_ROUTERS = ['meiduo_mall.utils.db_routers.MasterSlaveDBRouter']
+
 
 # Redis
 CACHES = {
